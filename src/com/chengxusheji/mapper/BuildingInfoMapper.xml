@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.BuildingInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加楼盘信息记录 -->
+	<insert id="addBuildingInfo" parameterType="buildingInfo">
+		insert into t_buildingInfo(areaObj,buildingName,buildingPhoto) values 
+		(#{areaObj.areaId},#{buildingName},#{buildingPhoto})
+	</insert>
+
+	<!-- 按照查询条件分页查询楼盘信息记录 -->
+	<select id="queryBuildingInfo" resultMap="buildingInfoMap" >
+		select t_buildingInfo.* from t_buildingInfo,t_areaInfo ${where} and t_buildingInfo.areaObj = t_areaInfo.areaId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="buildingInfoMap" type="buildingInfo">
+        <id property="buildingId" column="buildingId" />
+        <association property="areaObj" column="areaObj" select="com.chengxusheji.mapper.AreaInfoMapper.getAreaInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有楼盘信息记录 -->
+	<select id="queryBuildingInfoList" resultMap="buildingInfoMap" >
+		select t_buildingInfo.* from t_buildingInfo,t_areaInfo ${where} and t_buildingInfo.areaObj = t_areaInfo.areaId
+	</select>
+
+    <!-- 按照查询条件的楼盘信息记录数 -->
+	<select id="queryBuildingInfoCount" resultType="int">
+		select count(*) from t_buildingInfo,t_areaInfo ${where} and t_buildingInfo.areaObj = t_areaInfo.areaId
+	</select>
+
+	<!-- 根据主键查询某个楼盘信息记录 -->
+	<select id="getBuildingInfo" parameterType="int" resultMap="buildingInfoMap">
+		select * from t_buildingInfo where t_buildingInfo.buildingId = #{buildingId}
+	</select>
+
+	<!-- 更新楼盘信息记录 -->
+	<update id="updateBuildingInfo" parameterType="buildingInfo">
+		update t_buildingInfo set areaObj=#{areaObj.areaId},buildingName=#{buildingName},buildingPhoto=#{buildingPhoto} where buildingId = #{buildingId}
+	</update>
+
+	<!-- 删除楼盘信息记录 -->
+	<delete id="deleteBuildingInfo" parameterType="int">
+		delete from t_buildingInfo where buildingId=#{buildingId}
+	</delete>
+
+</mapper>

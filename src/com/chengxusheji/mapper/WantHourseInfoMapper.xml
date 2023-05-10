@@ -1,0 +1,52 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.WantHourseInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加求租信息记录 -->
+	<insert id="addWantHourseInfo" parameterType="wantHourseInfo">
+		insert into t_wantHourseInfo(userObj,title,position,hourseTypeObj,priceRangeObj,price,lianxiren,telephone) values 
+		(#{userObj.user_name},#{title},#{position.areaId},#{hourseTypeObj.typeId},#{priceRangeObj.rangeId},#{price},#{lianxiren},#{telephone})
+	</insert>
+
+	<!-- 按照查询条件分页查询求租信息记录 -->
+	<select id="queryWantHourseInfo" resultMap="wantHourseInfoMap" >
+		select t_wantHourseInfo.* from t_wantHourseInfo,t_areaInfo,t_hourseType,t_priceRange,t_userInfo ${where} and t_wantHourseInfo.userObj = t_userInfo.user_name and t_wantHourseInfo.position = t_areaInfo.areaId and t_wantHourseInfo.hourseTypeObj = t_hourseType.typeId and t_wantHourseInfo.priceRangeObj = t_priceRange.rangeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="wantHourseInfoMap" type="wantHourseInfo">
+        <id property="wantHourseId" column="wantHourseId" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+        <association property="position" column="position" select="com.chengxusheji.mapper.AreaInfoMapper.getAreaInfo" />
+        <association property="hourseTypeObj" column="hourseTypeObj" select="com.chengxusheji.mapper.HourseTypeMapper.getHourseType" />
+        <association property="priceRangeObj" column="priceRangeObj" select="com.chengxusheji.mapper.PriceRangeMapper.getPriceRange" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有求租信息记录 -->
+	<select id="queryWantHourseInfoList" resultMap="wantHourseInfoMap" >
+		select t_wantHourseInfo.* from t_wantHourseInfo,t_areaInfo,t_hourseType,t_priceRange,t_userInfo ${where} and t_wantHourseInfo.userObj = t_userInfo.user_name and t_wantHourseInfo.position = t_areaInfo.areaId and t_wantHourseInfo.hourseTypeObj = t_hourseType.typeId and t_wantHourseInfo.priceRangeObj = t_priceRange.rangeId
+	</select>
+
+    <!-- 按照查询条件的求租信息记录数 -->
+	<select id="queryWantHourseInfoCount" resultType="int">
+		select count(*) from t_wantHourseInfo,t_areaInfo,t_hourseType,t_priceRange,t_userInfo ${where} and t_wantHourseInfo.userObj = t_userInfo.user_name and t_wantHourseInfo.position = t_areaInfo.areaId and t_wantHourseInfo.hourseTypeObj = t_hourseType.typeId and t_wantHourseInfo.priceRangeObj = t_priceRange.rangeId
+	</select>
+
+	<!-- 根据主键查询某个求租信息记录 -->
+	<select id="getWantHourseInfo" parameterType="int" resultMap="wantHourseInfoMap">
+		select * from t_wantHourseInfo where t_wantHourseInfo.wantHourseId = #{wantHourseId}
+	</select>
+
+	<!-- 更新求租信息记录 -->
+	<update id="updateWantHourseInfo" parameterType="wantHourseInfo">
+		update t_wantHourseInfo set userObj=#{userObj.user_name},title=#{title},position=#{position.areaId},hourseTypeObj=#{hourseTypeObj.typeId},priceRangeObj=#{priceRangeObj.rangeId},price=#{price},lianxiren=#{lianxiren},telephone=#{telephone} where wantHourseId = #{wantHourseId}
+	</update>
+
+	<!-- 删除求租信息记录 -->
+	<delete id="deleteWantHourseInfo" parameterType="int">
+		delete from t_wantHourseInfo where wantHourseId=#{wantHourseId}
+	</delete>
+
+</mapper>

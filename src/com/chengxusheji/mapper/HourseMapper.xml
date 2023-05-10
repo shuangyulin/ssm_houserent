@@ -1,0 +1,51 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.HourseMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加房屋信息记录 -->
+	<insert id="addHourse" parameterType="hourse">
+		insert into t_hourse(hourseName,buildingObj,housePhoto,hourseTypeObj,priceRangeObj,area,price,louceng,zhuangxiu,caoxiang,madeYear,connectPerson,connectPhone,detail,address) values 
+		(#{hourseName},#{buildingObj.buildingId},#{housePhoto},#{hourseTypeObj.typeId},#{priceRangeObj.rangeId},#{area},#{price},#{louceng},#{zhuangxiu},#{caoxiang},#{madeYear},#{connectPerson},#{connectPhone},#{detail},#{address})
+	</insert>
+
+	<!-- 按照查询条件分页查询房屋信息记录 -->
+	<select id="queryHourse" resultMap="hourseMap" >
+		select t_hourse.* from t_hourse,t_buildingInfo,t_hourseType,t_priceRange ${where} and t_hourse.buildingObj = t_buildingInfo.buildingId and t_hourse.hourseTypeObj = t_hourseType.typeId and t_hourse.priceRangeObj = t_priceRange.rangeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="hourseMap" type="hourse">
+        <id property="hourseId" column="hourseId" />
+        <association property="buildingObj" column="buildingObj" select="com.chengxusheji.mapper.BuildingInfoMapper.getBuildingInfo" />
+        <association property="hourseTypeObj" column="hourseTypeObj" select="com.chengxusheji.mapper.HourseTypeMapper.getHourseType" />
+        <association property="priceRangeObj" column="priceRangeObj" select="com.chengxusheji.mapper.PriceRangeMapper.getPriceRange" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有房屋信息记录 -->
+	<select id="queryHourseList" resultMap="hourseMap" >
+		select t_hourse.* from t_hourse,t_buildingInfo,t_hourseType,t_priceRange ${where} and t_hourse.buildingObj = t_buildingInfo.buildingId and t_hourse.hourseTypeObj = t_hourseType.typeId and t_hourse.priceRangeObj = t_priceRange.rangeId
+	</select>
+
+    <!-- 按照查询条件的房屋信息记录数 -->
+	<select id="queryHourseCount" resultType="int">
+		select count(*) from t_hourse,t_buildingInfo,t_hourseType,t_priceRange ${where} and t_hourse.buildingObj = t_buildingInfo.buildingId and t_hourse.hourseTypeObj = t_hourseType.typeId and t_hourse.priceRangeObj = t_priceRange.rangeId
+	</select>
+
+	<!-- 根据主键查询某个房屋信息记录 -->
+	<select id="getHourse" parameterType="int" resultMap="hourseMap">
+		select * from t_hourse where t_hourse.hourseId = #{hourseId}
+	</select>
+
+	<!-- 更新房屋信息记录 -->
+	<update id="updateHourse" parameterType="hourse">
+		update t_hourse set hourseName=#{hourseName},buildingObj=#{buildingObj.buildingId},housePhoto=#{housePhoto},hourseTypeObj=#{hourseTypeObj.typeId},priceRangeObj=#{priceRangeObj.rangeId},area=#{area},price=#{price},louceng=#{louceng},zhuangxiu=#{zhuangxiu},caoxiang=#{caoxiang},madeYear=#{madeYear},connectPerson=#{connectPerson},connectPhone=#{connectPhone},detail=#{detail},address=#{address} where hourseId = #{hourseId}
+	</update>
+
+	<!-- 删除房屋信息记录 -->
+	<delete id="deleteHourse" parameterType="int">
+		delete from t_hourse where hourseId=#{hourseId}
+	</delete>
+
+</mapper>

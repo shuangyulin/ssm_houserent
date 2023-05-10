@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.HourseTypeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加房屋类别记录 -->
+	<insert id="addHourseType" parameterType="hourseType">
+		insert into t_hourseType(typeName) values 
+		(#{typeName})
+	</insert>
+
+	<!-- 按照查询条件分页查询房屋类别记录 -->
+	<select id="queryHourseType" resultMap="hourseTypeMap" >
+		select t_hourseType.* from t_hourseType ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="hourseTypeMap" type="hourseType">
+        <id property="typeId" column="typeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有房屋类别记录 -->
+	<select id="queryHourseTypeList" resultMap="hourseTypeMap" >
+		select t_hourseType.* from t_hourseType ${where}
+	</select>
+
+    <!-- 按照查询条件的房屋类别记录数 -->
+	<select id="queryHourseTypeCount" resultType="int">
+		select count(*) from t_hourseType ${where}
+	</select>
+
+	<!-- 根据主键查询某个房屋类别记录 -->
+	<select id="getHourseType" parameterType="int" resultMap="hourseTypeMap">
+		select * from t_hourseType where t_hourseType.typeId = #{typeId}
+	</select>
+
+	<!-- 更新房屋类别记录 -->
+	<update id="updateHourseType" parameterType="hourseType">
+		update t_hourseType set typeName=#{typeName} where typeId = #{typeId}
+	</update>
+
+	<!-- 删除房屋类别记录 -->
+	<delete id="deleteHourseType" parameterType="int">
+		delete from t_hourseType where typeId=#{typeId}
+	</delete>
+
+</mapper>

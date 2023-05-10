@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.GuestBookMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加留言信息记录 -->
+	<insert id="addGuestBook" parameterType="guestBook">
+		insert into t_guestBook(title,content,userObj,addTime) values 
+		(#{title},#{content},#{userObj.user_name},#{addTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询留言信息记录 -->
+	<select id="queryGuestBook" resultMap="guestBookMap" >
+		select t_guestBook.* from t_guestBook,t_userInfo ${where} and t_guestBook.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="guestBookMap" type="guestBook">
+        <id property="guestBookId" column="guestBookId" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有留言信息记录 -->
+	<select id="queryGuestBookList" resultMap="guestBookMap" >
+		select t_guestBook.* from t_guestBook,t_userInfo ${where} and t_guestBook.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的留言信息记录数 -->
+	<select id="queryGuestBookCount" resultType="int">
+		select count(*) from t_guestBook,t_userInfo ${where} and t_guestBook.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个留言信息记录 -->
+	<select id="getGuestBook" parameterType="int" resultMap="guestBookMap">
+		select * from t_guestBook where t_guestBook.guestBookId = #{guestBookId}
+	</select>
+
+	<!-- 更新留言信息记录 -->
+	<update id="updateGuestBook" parameterType="guestBook">
+		update t_guestBook set title=#{title},content=#{content},userObj=#{userObj.user_name},addTime=#{addTime} where guestBookId = #{guestBookId}
+	</update>
+
+	<!-- 删除留言信息记录 -->
+	<delete id="deleteGuestBook" parameterType="int">
+		delete from t_guestBook where guestBookId=#{guestBookId}
+	</delete>
+
+</mapper>

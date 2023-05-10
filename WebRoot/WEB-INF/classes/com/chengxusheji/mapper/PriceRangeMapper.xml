@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.PriceRangeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加租金范围记录 -->
+	<insert id="addPriceRange" parameterType="priceRange">
+		insert into t_priceRange(priceName) values 
+		(#{priceName})
+	</insert>
+
+	<!-- 按照查询条件分页查询租金范围记录 -->
+	<select id="queryPriceRange" resultMap="priceRangeMap" >
+		select t_priceRange.* from t_priceRange ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="priceRangeMap" type="priceRange">
+        <id property="rangeId" column="rangeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有租金范围记录 -->
+	<select id="queryPriceRangeList" resultMap="priceRangeMap" >
+		select t_priceRange.* from t_priceRange ${where}
+	</select>
+
+    <!-- 按照查询条件的租金范围记录数 -->
+	<select id="queryPriceRangeCount" resultType="int">
+		select count(*) from t_priceRange ${where}
+	</select>
+
+	<!-- 根据主键查询某个租金范围记录 -->
+	<select id="getPriceRange" parameterType="int" resultMap="priceRangeMap">
+		select * from t_priceRange where t_priceRange.rangeId = #{rangeId}
+	</select>
+
+	<!-- 更新租金范围记录 -->
+	<update id="updatePriceRange" parameterType="priceRange">
+		update t_priceRange set priceName=#{priceName} where rangeId = #{rangeId}
+	</update>
+
+	<!-- 删除租金范围记录 -->
+	<delete id="deletePriceRange" parameterType="int">
+		delete from t_priceRange where rangeId=#{rangeId}
+	</delete>
+
+</mapper>
